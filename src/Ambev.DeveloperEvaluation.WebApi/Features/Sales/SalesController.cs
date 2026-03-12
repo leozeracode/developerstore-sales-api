@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Sales.CancelItem;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
@@ -143,6 +144,24 @@ public class SalesController : BaseController
         {
             Success = true,
             Message = "Sale cancelled successfully"
+        });
+    }
+    
+    [HttpDelete("{saleId}/items/{itemId}")]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelSaleItem([FromRoute] Guid saleId, [FromRoute] Guid itemId, CancellationToken cancellationToken)
+    {
+        var command = new CancelItemCommand(saleId, itemId);
+        var success = await _mediator.Send(command, cancellationToken);
+
+        if (!success)
+            return NotFound(new ApiResponse { Success = false, Message = "Sale or Item not found" });
+
+        return Ok(new ApiResponse
+        {
+            Success = true,
+            Message = "Item cancelled successfully"
         });
     }
 }

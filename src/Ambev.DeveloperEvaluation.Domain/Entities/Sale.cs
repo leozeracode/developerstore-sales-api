@@ -63,11 +63,12 @@ public class Sale : BaseEntity
         }
     }
 
-    public void CancelItem(Guid productId)
+    public void CancelItem(Guid itemId)
     {
-        if (IsCancelled) return;
-
-        var item = _items.FirstOrDefault(i => i.ProductId == productId && !i.IsCancelled);
+        var item = _items.FirstOrDefault(i => i.Id == itemId);
+        if (item == null)
+            throw new KeyNotFoundException($"Item with id {itemId} not found.");
+        
         item?.Cancel();
     }
 
