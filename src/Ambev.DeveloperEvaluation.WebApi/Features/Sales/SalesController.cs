@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
@@ -21,6 +22,21 @@ public class SalesController : BaseController
     {
         _mediator = mediator;
         _mapper = mapper;
+    }
+    
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResponseWithData<ListSalesResult>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListSales([FromQuery] int _page = 1, [FromQuery] int _size = 10, CancellationToken cancellationToken = default)
+    {
+        var command = new ListSalesCommand { Page = _page, Size = _size };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponseWithData<ListSalesResult>
+        {
+            Success = true,
+            Message = "Sales retrieved successfully",
+            Data = response
+        });
     }
 
     [HttpGet("{id}")]

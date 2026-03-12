@@ -19,6 +19,21 @@ public class SaleRepository : ISaleRepository
         await _context.SaveChangesAsync(cancellationToken);
         return sale;
     }
+    
+    public async Task<(IEnumerable<Sale> Data, int TotalCount)> GetAllPaginatedAsync(int page, int size, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Sales.AsNoTracking();
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var sales = await query
+            .OrderByDescending(s => s.SaleDate)
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToListAsync(cancellationToken);
+
+        return (sales, totalCount);
+    }
 
     public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {

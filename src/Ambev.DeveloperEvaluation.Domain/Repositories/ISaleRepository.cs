@@ -4,6 +4,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 
 public interface ISaleRepository
 {
+    Task<(IEnumerable<Sale> Data, int TotalCount)> GetAllPaginatedAsync(int page, int size, CancellationToken cancellationToken = default);
     Task<Sale> CreateAsync(Sale sale, CancellationToken cancellationToken = default);
     Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Sale> UpdateAsync(Sale sale, CancellationToken cancellationToken = default);
