@@ -25,23 +25,32 @@ public class SalesController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateSale([FromBody] CreateSaleRequest request, CancellationToken cancellationToken)
     {
-        var validator = new CreateSaleRequestValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);
-
-        var command = _mapper.Map<CreateSaleCommand>(request);
-        
-        var response = await _mediator.Send(command, cancellationToken);
-
-        var result = _mapper.Map<CreateSaleResponse>(response);
-
-        return Created(string.Empty, new ApiResponseWithData<CreateSaleResponse>
+        try
         {
-            Success = true,
-            Message = "Sale created successfully",
-            Data = result
-        });
+            var command = _mapper.Map<CreateSaleCommand>(request);
+            var response = await _mediator.Send(command, cancellationToken);
+            var result = _mapper.Map<CreateSaleResponse>(response);
+
+            return Created(string.Empty, new ApiResponseWithData<CreateSaleResponse>
+            {
+                Success = true,
+                Message = "Sale created successfully",
+                Data = result
+            });
+        }
+        catch (InvalidOperationException ex) 
+        {
+            return BadRequest(new ApiResponse { 
+                Success = false, 
+                Message = ex.Message 
+            });
+        }
+        catch (ArgumentException ex) 
+        {
+            return BadRequest(new ApiResponse { 
+                Success = false, 
+                Message = ex.Message 
+            });
+        }
     }
 }
