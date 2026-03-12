@@ -30,6 +30,16 @@ public class Sale : BaseEntity
         IsCancelled = false;
     }
 
+    public Sale(string commandSaleNumber, Guid commandCustomerId, string commandCustomerName, Guid commandBranchId, string commandBranchName)
+    {
+        Id = Guid.NewGuid();
+        SaleNumber = commandSaleNumber;
+        SaleDate = DateTime.UtcNow;
+        Customer = new Customer(commandCustomerId, commandCustomerName);
+        Branch = new Branch(commandBranchId, commandBranchName);
+        IsCancelled = false;
+    }
+
     public void AddItem(Guid productId, string productName, int quantity, decimal unitPrice)
     {
         if (IsCancelled)
