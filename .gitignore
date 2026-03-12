@@ -1,0 +1,32 @@
+# Build folders
+bin/
+obj/
+
+# Rider
+.idea/
+*.sln.iml
+
+# User specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build generated
+*.cache
+*.pdb
+*.mdb
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test results
+TestResults/
+
+# Rider / ReSharper
+_ReSharper*/
+*.DotSettings.user
