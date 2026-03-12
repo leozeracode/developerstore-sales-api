@@ -42,9 +42,9 @@ public class GetSaleHandlerTests
     public async Task Handle_NonExistingSale_ShouldThrowException()
     {
         var command = new GetSaleCommand(Guid.NewGuid());
-        
+
         _saleRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
-            .Returns((Sale?)null); 
+            .Returns((Sale?)null);
 
         var act = async () => await _handler.Handle(command, CancellationToken.None);
 

@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using AutoMapper;
@@ -44,11 +45,12 @@ public class SalesController : BaseController
             return NotFound(new ApiResponse { Success = false, Message = ex.Message });
         }
     }
-    
+
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateSale([FromBody] CreateSaleRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateSale([FromBody] CreateSaleRequest request,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -63,22 +65,53 @@ public class SalesController : BaseController
                 Data = result
             });
         }
-        catch (InvalidOperationException ex) 
+        catch (InvalidOperationException ex)
         {
-            return BadRequest(new ApiResponse { 
-                Success = false, 
-                Message = ex.Message 
+            return BadRequest(new ApiResponse
+            {
+                Success = false,
+                Message = ex.Message
             });
         }
-        catch (ArgumentException ex) 
+        catch (ArgumentException ex)
         {
-            return BadRequest(new ApiResponse { 
-                Success = false, 
-                Message = ex.Message 
+            return BadRequest(new ApiResponse
+            {
+                Success = false,
+                Message = ex.Message
             });
         }
     }
-    
+
+    [HttpPut("{id}")]
+    [ProducesResponseType(typeof(ApiResponseWithData<UpdateSaleResult>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateSale([FromRoute] Guid id, [FromBody] UpdateSaleCommand request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            request.Id = id;
+            var response = await _mediator.Send(request, cancellationToken);
+
+            return Ok(new ApiResponseWithData<UpdateSaleResult>
+            {
+                Success = true,
+                Message = "Sale updated successfully",
+                Data = response
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ApiResponse { Success = false, Message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new ApiResponse { Success = false, Message = ex.Message });
+        }
+    }
+
     [HttpDelete("{id}")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]

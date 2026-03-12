@@ -81,4 +81,17 @@ public class Sale : BaseEntity
             item.Cancel();
         }
     }
+    
+    public void UpdateBasicInfo(string saleNumber, DateTime saleDate, Customer customer, Branch branch)
+    {
+        SaleNumber = saleNumber;
+        SaleDate = saleDate;
+        Customer = customer;
+        Branch = branch;
+    }
+
+    public void ClearItems()
+    {
+        _items.Clear();
+    }
 }

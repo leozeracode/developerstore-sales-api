@@ -32,11 +32,11 @@ public class DeleteSaleHandlerTests
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
-        result.Should().BeTrue(); 
+        result.Should().BeTrue();
         saleEntity.IsCancelled.Should().BeTrue();
-        
+
         await _saleRepository.Received(1).UpdateAsync(saleEntity, Arg.Any<CancellationToken>());
-        
+
         await _mediator.Received(1).Publish(Arg.Any<SaleCancelledEvent>(), Arg.Any<CancellationToken>());
     }
 
@@ -44,14 +44,14 @@ public class DeleteSaleHandlerTests
     public async Task Handle_NonExistingSale_ShouldReturnFalse()
     {
         var command = new DeleteSaleCommand(Guid.NewGuid());
-        
+
         _saleRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
             .Returns((Sale?)null);
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Should().BeFalse();
-        
+
         await _saleRepository.DidNotReceive().UpdateAsync(Arg.Any<Sale>(), Arg.Any<CancellationToken>());
         await _mediator.DidNotReceive().Publish(Arg.Any<SaleCancelledEvent>(), Arg.Any<CancellationToken>());
     }
