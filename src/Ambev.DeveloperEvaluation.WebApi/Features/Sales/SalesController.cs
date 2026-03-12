@@ -107,12 +107,7 @@ public class SalesController : BaseController
             request.Id = id;
             var response = await _mediator.Send(request, cancellationToken);
 
-            return Ok(new ApiResponseWithData<UpdateSaleResult>
-            {
-                Success = true,
-                Message = "Sale updated successfully",
-                Data = response
-            });
+            return Ok(response);
         }
         catch (KeyNotFoundException ex)
         {

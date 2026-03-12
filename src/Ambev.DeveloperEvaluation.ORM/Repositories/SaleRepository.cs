@@ -44,11 +44,22 @@ public class SaleRepository : ISaleRepository
 
     public async Task<Sale> UpdateAsync(Sale sale, CancellationToken cancellationToken = default)
     {
-        _context.Sales.Update(sale);
+        var tracked = _context.Sales.Local.FirstOrDefault(s => s.Id == sale.Id);
+        if (tracked != null)
+            _context.Entry(tracked).State = EntityState.Detached;
+
+        _context.Sales.Attach(sale);
+        _context.Entry(sale).State = EntityState.Modified;
         await _context.SaveChangesAsync(cancellationToken);
+    
         return sale;
     }
 
+    public void RemoveItemsRange(IEnumerable<SaleItem> items)
+    {
+        _context.Set<SaleItem>().RemoveRange(items);
+    }
+    
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var sale = await GetByIdAsync(id, cancellationToken);

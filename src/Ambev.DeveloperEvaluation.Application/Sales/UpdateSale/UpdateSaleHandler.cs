@@ -19,12 +19,17 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
     public async Task<UpdateSaleResult> Handle(UpdateSaleCommand command, CancellationToken cancellationToken)
     {
         var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
-        
         if (sale == null)
             throw new KeyNotFoundException($"Sale with ID {command.Id} was not found.");
 
         if (sale.IsCancelled)
             throw new InvalidOperationException("Cannot update a cancelled sale.");
+
+        if (sale.Items.Any())
+        {
+            _saleRepository.RemoveItemsRange(sale.Items.ToList());
+            sale.ClearItems();
+        }
 
         sale.UpdateBasicInfo(
             command.SaleNumber, 
@@ -33,15 +38,12 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
             new Branch(command.BranchId, command.BranchName)
         );
 
-        sale.ClearItems();
         foreach (var item in command.Items)
         {
             sale.AddItem(item.ProductId, item.ProductName, item.Quantity, item.UnitPrice);
         }
 
         await _saleRepository.UpdateAsync(sale, cancellationToken);
-
-        await _mediator.Publish(new SaleModifiedEvent(sale.Id, DateTime.UtcNow), cancellationToken);
 
         return new UpdateSaleResult { Id = sale.Id, SaleNumber = sale.SaleNumber };
     }

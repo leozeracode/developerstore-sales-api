@@ -4,6 +4,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
 public class SaleItem : BaseEntity
 {
+    public Guid Id { get; private set; } 
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; } = string.Empty;
     public int Quantity { get; private set; }
@@ -52,4 +53,6 @@ public class SaleItem : BaseEntity
     {
         IsCancelled = true;
     }
+    
+    public void UpdateQuantity(int newQuantity) => Quantity = newQuantity;
 }

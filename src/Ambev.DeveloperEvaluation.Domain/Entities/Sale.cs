@@ -43,7 +43,7 @@ public class Sale : BaseEntity
     public void AddItem(Guid productId, string productName, int quantity, decimal unitPrice)
     {
         if (IsCancelled)
-            throw new InvalidOperationException("Cannot add items to a cancelled sale.");
+        throw new InvalidOperationException("Cannot add items to a cancelled sale.");
 
         var existingItem = _items.FirstOrDefault(i => i.ProductId == productId && !i.IsCancelled);
 
@@ -51,11 +51,9 @@ public class Sale : BaseEntity
         {
             var newQuantity = existingItem.Quantity + quantity;
             if (newQuantity > 20)
-                throw new InvalidOperationException(
-                    "The total quantity of this product exceeds the limit of 20 items.");
+                throw new InvalidOperationException("The total quantity of this product exceeds the limit of 20 items.");
 
-            _items.Remove(existingItem);
-            _items.Add(new SaleItem(productId, productName, newQuantity, unitPrice));
+            existingItem.UpdateQuantity(newQuantity); 
         }
         else
         {
