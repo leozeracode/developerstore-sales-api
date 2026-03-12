@@ -13,6 +13,9 @@ public class DefaultContext : DbContext
     public DefaultContext(DbContextOptions<DefaultContext> options) : base(options)
     {
     }
+    
+    public DbSet<Sale> Sales { get; set; }
+    public DbSet<SaleItem> SaleItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
